@@ -135,7 +135,7 @@ functions:
 
   # Crear una transacción
   createTransaction:
-    handler: src/interfaces/handlers/createTransaction.handler.createTransactionHandler
+    handler: ${self:custom.pathRoot}/handlers/createTransaction.handler
     events:
       - http:
           path: transactions
@@ -144,7 +144,7 @@ functions:
 
   # Pagar una transacción
   payTransaction:
-    handler: src/interfaces/handlers/payTransaction.handler.payTransactionHandler
+    handler: ${self:custom.pathRoot}/handlers/payTransaction.handler
     events:
       - http:
           path: transactions/{id}/pay
@@ -153,7 +153,7 @@ functions:
 
   # Webhook Wompi
   webhookWompi:
-    handler: src/interfaces/handlers/webhookWompi.handler
+    handler: ${self:custom.pathRoot}/handlers/webhookWompi.handler
     events:
       - http:
           path: webhook/wompi
@@ -162,7 +162,7 @@ functions:
 
   # Get Products
   getProducts:
-    handler: src/interfaces/handlers/getProducts.handler
+    handler: ${self:custom.pathRoot}/handlers/getProducts.handler
     events:
       - http:
           path: products

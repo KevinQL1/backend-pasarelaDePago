@@ -6,7 +6,7 @@ process.on('message', async ({ entryPoints, mode }) => {
     entryNames: '[dir]/[name]',
     bundle: true,
     platform: 'node',
-    target: 'node22',
+    target: 'node20',
     outdir: 'dist',
     outbase: 'src',
     logLevel: 'info'
@@ -15,11 +15,13 @@ process.on('message', async ({ entryPoints, mode }) => {
   const buildOptions = {
     main: {
       ...baseOptions,
-      minify: true
+      minify: true,
+      format: 'esm'
     },
     offline: {
       ...baseOptions,
-      keepNames: true
+      keepNames: true,
+      format: 'esm'
     }
   }
 
