@@ -1,4 +1,4 @@
-import { ProductDynamoDB } from '#/infrastructure/dynamodb/ProductDynamoRepo.js';
+import { ProductDynamoDB } from '#/infrastructure/dynamodb/ProductDynamoDB.js';
 
 export class UpdateStock {
     constructor({ productRepository }) {

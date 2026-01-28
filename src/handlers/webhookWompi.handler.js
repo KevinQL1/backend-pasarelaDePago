@@ -1,16 +1,16 @@
-import { TransactionDynamoDB } from '#/infrastructure/dynamodb/TransactionDynamoRepo.js';
-import { ProductDynamoDB } from '#/infrastructure/dynamodb/ProductDynamoRepo.js';
-import { DeliveryDynamoDB } from '#/infrastructure/dynamodb/DeliveryDynamoRepo.js';
+import { TransactionDynamoDB } from '#/infrastructure/dynamodb/TransactionDynamoDB.js';
+import { ProductDynamoDB } from '#/infrastructure/dynamodb/ProductDynamoDB.js';
+import { DeliveryDynamoDB } from '#/infrastructure/dynamodb/DeliveryDynamoDB.js';
 import { UpdateStock } from '#/application/useCases/UpdateStock.js';
 import { v4 as uuidv4 } from 'uuid';
 
-const transactionRepo = new TransactionDynamoDB(process.env.TRANSACTION_TABLE);
-const productRepo = new ProductDynamoDB(process.env.PRODUCT_TABLE);
-const deliveryRepo = new DeliveryDynamoDB(process.env.DELIVERY_TABLE);
-
-const updateStockUseCase = new UpdateStock({ productRepository: productRepo });
 
 export const handler = async (event) => {
+  const transactionDynamoDB = new TransactionDynamoDB(process.env.TRANSACTION_TABLE);
+  const productDynamoDB = new ProductDynamoDB(process.env.PRODUCT_TABLE);
+  const deliveryDynamoDB = new DeliveryDynamoDB(process.env.DELIVERY_TABLE);
+  const updateStockUseCase = new UpdateStock({ productRepository: productDynamoDB });
+
   try {
     const body = JSON.parse(event.body);
 
@@ -22,7 +22,7 @@ export const handler = async (event) => {
     }
 
     // Buscar la transacción por wompiTransactionId
-    const transaction = await transactionRepo.findByWompiId(wompiTransactionId);
+    const transaction = await transactionDynamoDB.findById(wompiTransactionId);
     if (!transaction) {
       return { statusCode: 404, body: 'Transaction not found' };
     }
@@ -31,7 +31,7 @@ export const handler = async (event) => {
     transaction.status = status;
     transaction.updatedAt = new Date().toISOString();
     transaction.wompiTransactionId = wompiTransactionId;
-    await transactionRepo.update(transaction);
+    await transactionDynamoDB.update(transaction);
 
     // Si es aprobado, actualizar stock y crear delivery
     if (status === 'APPROVED') {
@@ -51,7 +51,7 @@ export const handler = async (event) => {
         updatedAt: new Date().toISOString(),
       };
 
-      await deliveryRepo.save(delivery);
+      await deliveryDynamoDB.save(delivery);
     }
 
     return { statusCode: 200, body: 'OK' };

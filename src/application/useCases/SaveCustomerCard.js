@@ -1,4 +1,4 @@
-import { CustomerDynamoDB } from '#/infrastructure/dynamodb/CustomerDynamoRepo.js';
+import { CustomerDynamoDB } from '#/infrastructure/dynamodb/CustomerDynamoDB.js';
 import { EncryptionService } from '#/application/services/EncryptionService.js';
 
 export class SaveCustomerCard {
