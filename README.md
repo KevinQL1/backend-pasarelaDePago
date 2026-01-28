@@ -54,4 +54,5 @@ backend-wompi/
 └── tests/                  # Pruebas automatizadas
     ├── domain/             # Tests de entidades del dominio
     ├── application/        # Tests de casos de uso
+    ├── handlers/           # Tests de handlers
     └── infrastructure/     # Tests de servicios e integraciones

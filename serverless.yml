@@ -20,13 +20,18 @@ provider:
     STAGE: ${self:provider.stage}
     NODE_ENV: ${self:provider.stage}
     IS_TEST: ${env:IS_TEST, 'false'}
+    PRODUCT_TABLE: ${self:provider.stage}-ProductTable
+    CUSTOMER_TABLE: ${self:provider.stage}-CustomerTable
+    TRANSACTION_TABLE: ${self:provider.stage}-TransactionTable
+    DELIVERY_TABLE: ${self:provider.stage}-DeliveryTable
+    ENCRYPTION_KEY: ${env:ENCRYPTION_KEY}
+    ENCRYPTION_IV: ${env:ENCRYPTION_IV}
 
-  # Permisos básicos (DynamoDB luego)
   iamRoleStatements:
     - Effect: Allow
       Action:
         - dynamodb:*
-      Resource: '*'
+      Resource: "*"
 
 # --------------------------------------------------
 # Plugins
@@ -43,14 +48,81 @@ custom:
     reloadHandler: true
 
 # --------------------------------------------------
+# Resources (DynamoDB Tables)
+# --------------------------------------------------
+resources:
+  Resources:
+
+    ProductTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.PRODUCT_TABLE}
+        AttributeDefinitions:
+          - AttributeName: PK
+            AttributeType: S
+          - AttributeName: SK
+            AttributeType: S
+        KeySchema:
+          - AttributeName: PK
+            KeyType: HASH
+          - AttributeName: SK
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+
+    CustomerTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.CUSTOMER_TABLE}
+        AttributeDefinitions:
+          - AttributeName: PK
+            AttributeType: S
+          - AttributeName: SK
+            AttributeType: S
+        KeySchema:
+          - AttributeName: PK
+            KeyType: HASH
+          - AttributeName: SK
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+
+    TransactionTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.TRANSACTION_TABLE}
+        AttributeDefinitions:
+          - AttributeName: PK
+            AttributeType: S
+          - AttributeName: SK
+            AttributeType: S
+        KeySchema:
+          - AttributeName: PK
+            KeyType: HASH
+          - AttributeName: SK
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+
+    DeliveryTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.DELIVERY_TABLE}
+        AttributeDefinitions:
+          - AttributeName: PK
+            AttributeType: S
+          - AttributeName: SK
+            AttributeType: S
+        KeySchema:
+          - AttributeName: PK
+            KeyType: HASH
+          - AttributeName: SK
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+
+# --------------------------------------------------
 # Functions (Handlers)
 # --------------------------------------------------
 functions:
 
-  # ----------------------------------------------
   # Crear una transacción
-  # POST /transactions
-  # ----------------------------------------------
   createTransaction:
     handler: src/interfaces/handlers/createTransaction.handler.createTransactionHandler
     events:
@@ -59,14 +131,20 @@ functions:
           method: post
           cors: true
 
-  # ----------------------------------------------
   # Pagar una transacción
-  # POST /transactions/{id}/pay
-  # ----------------------------------------------
   payTransaction:
     handler: src/interfaces/handlers/payTransaction.handler.payTransactionHandler
     events:
       - http:
           path: transactions/{id}/pay
+          method: post
+          cors: true
+
+  # Webhook Wompi
+  webhookWompi:
+    handler: src/interfaces/handlers/webhookWompi.handler
+    events:
+      - http:
+          path: webhook/wompi
           method: post
           cors: true
