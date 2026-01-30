@@ -60,6 +60,79 @@
                 }
               },
               "response": []
+            },
+            {
+              "name": "getProductById",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:4001/local/products/7d8be492ab064b6cac70",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "4001",
+                  "path": [
+                    "local",
+                    "products",
+                    "7d8be492ab064b6cac70"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Deliveries",
+          "item": [
+            {
+              "name": "getDeliveryById",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:4001/local/deliveries/7d8be492ab064b6cac70",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "4001",
+                  "path": [
+                    "local",
+                    "deliveries",
+                    "7d8be492ab064b6cac70"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Customers",
+          "item": [
+            {
+              "name": "getCustomerById",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:4001/local/customers/7d8be492ab064b6cac70",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "4001",
+                  "path": [
+                    "local",
+                    "customers",
+                    "7d8be492ab064b6cac70"
+                  ]
+                }
+              },
+              "response": []
             }
           ]
         },
@@ -173,7 +246,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"name\": \"TV\",\r\n    \"description\": \"Samsung 60 pulgadas\",\r\n    \"price\": 1500,\r\n    \"stock\": 2\r\n}",
+                  "raw": "{\r\n    \"name\": \"Parlantes\",\r\n    \"description\": \"Sonido envolvente\",\r\n    \"price\": 2500,\r\n    \"stock\": 7\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -197,6 +270,88 @@
                 }
               },
               "response": []
+            },
+            {
+              "name": "getProductById",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://nml394oswa.execute-api.us-east-1.amazonaws.com/local/products/7d8be492ab064b6cac70",
+                  "protocol": "https",
+                  "host": [
+                    "nml394oswa",
+                    "execute-api",
+                    "us-east-1",
+                    "amazonaws",
+                    "com"
+                  ],
+                  "path": [
+                    "local",
+                    "products",
+                    "7d8be492ab064b6cac70"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Deliveries",
+          "item": [
+            {
+              "name": "getDeliveryById",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://nml394oswa.execute-api.us-east-1.amazonaws.com/local/deliveries/ccb13a4cdb45494bb",
+                  "protocol": "https",
+                  "host": [
+                    "nml394oswa",
+                    "execute-api",
+                    "us-east-1",
+                    "amazonaws",
+                    "com"
+                  ],
+                  "path": [
+                    "local",
+                    "deliveries",
+                    "ccb13a4cdb45494bb"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Customers",
+          "item": [
+            {
+              "name": "getCustomerById",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://nml394oswa.execute-api.us-east-1.amazonaws.com/local/customers/1037650134",
+                  "protocol": "https",
+                  "host": [
+                    "nml394oswa",
+                    "execute-api",
+                    "us-east-1",
+                    "amazonaws",
+                    "com"
+                  ],
+                  "path": [
+                    "local",
+                    "customers",
+                    "1037650134"
+                  ]
+                }
+              },
+              "response": []
             }
           ]
         },
@@ -207,7 +362,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"paymentInfo\": {\r\n        \"cardNumber\": \"4242424242424242\", // 4242424242424242 aprobada ----- 4111111111111111 rechazada\r\n        \"cardType\": \"VISA\",\r\n        \"expiry\": \"01/50\",\r\n        \"cvc\": \"123\",\r\n        \"customer\": {\r\n            \"cedula\": \"1037650134\",\r\n            \"name\": \"Kevin Quintero\",\r\n            \"address\": \"carrera 40 # 40 B sur - 41\",\r\n            \"city\": \"Envigado\",\r\n            \"phone\": \"573042006112\",\r\n            \"email\": \"kevinquintero045@gmail.com\"\r\n        },\r\n        \"productId\": \"620023ecb0c64926a\", // ID DE UN PRODUCTO\r\n        \"quantity\": 2\r\n    }\r\n}",
+              "raw": "{\r\n    \"paymentInfo\": {\r\n        \"cardNumber\": \"4242424242424242\", // 4242424242424242 aprobada ----- 4111111111111111 rechazada\r\n        \"cardType\": \"VISA\",\r\n        \"expiry\": \"01/50\",\r\n        \"cvc\": \"123\",\r\n        \"customer\": {\r\n            \"cedula\": \"1037650134\",\r\n            \"name\": \"Kevin Quintero\",\r\n            \"email\": \"kevinquintero045@gmail.com\",\r\n            \"address\": \"carrera 40 # 40 B sur - 41\",\r\n            \"city\": \"Envigado\",\r\n            \"phone\": \"573042006112\"\r\n        },\r\n        \"productId\": \"620023ecb0c64926a\", // ID DE UN PRODUCTO\r\n        \"quantity\": 2\r\n    }\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -239,7 +394,7 @@
             "method": "POST",
             "header": [],
             "url": {
-              "raw": "https://nml394oswa.execute-api.us-east-1.amazonaws.com/local/transaction/9ceae881b65d4d809",
+              "raw": "https://nml394oswa.execute-api.us-east-1.amazonaws.com/local/transaction/c9b9e489f9c34862a7b",
               "protocol": "https",
               "host": [
                 "nml394oswa",
@@ -251,7 +406,7 @@
               "path": [
                 "local",
                 "transaction",
-                "9ceae881b65d4d809"
+                "c9b9e489f9c34862a7b"
               ]
             }
           },

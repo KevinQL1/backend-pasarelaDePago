@@ -52,10 +52,9 @@ export class CustomerEntity {
       throw new Error('Customer phone es requerido y debe ser un string');
     }
 
-    // validación básica de teléfono (solo números, mínimo 7, máximo 15)
     const phoneRegex = /^\d{10,13}$/;
     if (!phoneRegex.test(phone)) {
-      throw new Error('Customer phone no es válido (debe contener solo números y entre 7 y 15 dígitos)');
+      throw new Error('Customer phone no es válido (debe contener solo números y entre 10 y 13 dígitos)');
     }
   }
 }

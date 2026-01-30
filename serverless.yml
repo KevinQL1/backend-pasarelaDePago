@@ -180,3 +180,30 @@ functions:
           path: products
           method: get
           cors: true
+
+  # Get Product By Id
+  getProductById:
+    handler: ${self:custom.pathRoot}/handlers/getProductById.handler
+    events:
+      - http:
+          path: products/{idProduct}
+          method: get
+          cors: true
+
+  # Get Customer By Id
+  getCustomerById:  
+    handler: ${self:custom.pathRoot}/handlers/getCustomerById.handler
+    events:
+      - http:
+          path: customers/{idCustomer}
+          method: get
+          cors: true
+  
+  # Get Delivery By Id
+  getDeliveryById:  
+    handler: ${self:custom.pathRoot}/handlers/getDeliveryById.handler
+    events:
+      - http:
+          path: deliveries/{idDelivery}
+          method: get
+          cors: true
