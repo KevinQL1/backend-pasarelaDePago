@@ -94,7 +94,7 @@ export class TransactionDynamoDB {
     return this.findById(id);
   }
 
-  async updateStatus(id, status, wompiTransactionId = null) {
+  async updateStatus(id, status, wompiTransactionId = null, customerId = null) {
     const now = new Date().toISOString();
 
     await dynamoDb.send(
@@ -107,6 +107,7 @@ export class TransactionDynamoDB {
         UpdateExpression: `
         SET #status = :status,
             wompiTransactionId = :wompiTransactionId,
+            customerId = :customerId
             updatedAt = :updatedAt
       `,
         ExpressionAttributeNames: {
@@ -115,6 +116,7 @@ export class TransactionDynamoDB {
         ExpressionAttributeValues: {
           ':status': status,
           ':wompiTransactionId': wompiTransactionId,
+          ':customerId': customerId,
           ':updatedAt': now,
         },
       })

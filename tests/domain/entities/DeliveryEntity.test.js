@@ -4,23 +4,13 @@ describe('DeliveryEntity', () => {
   it('should throw error if id is missing', () => {
     expect(() => new DeliveryEntity({
       id: '',
-      transactionId: 't1',
       address: 'Calle 123'
     })).toThrow('Delivery must have an id')
-  })
-
-  it('should throw error if transactionId is missing', () => {
-    expect(() => new DeliveryEntity({
-      id: 'd1',
-      transactionId: '',
-      address: 'Calle 123'
-    })).toThrow('Delivery must have a transactionId')
   })
 
   it('should create delivery correctly', () => {
     const delivery = new DeliveryEntity({
       id: 'd1',
-      transactionId: 't1',
       address: 'Calle 123',
       status: 'PENDING',
       createdAt: new Date().toISOString(),

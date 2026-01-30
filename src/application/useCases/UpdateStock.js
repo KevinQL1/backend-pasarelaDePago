@@ -37,14 +37,11 @@ export class UpdateStock {
         // Buscar y actualizar el estado de la transacción de wompi
         const findStatusTransaction = await this.paymentService.findAndUpdateTransactionById(transaction.wompiTransactionId);
 
-        //Actualizar estado en DynamoDB
-        const updateTransaction = await this.transactionRepo.updateStatus(transaction.id, findStatusTransaction.status, findStatusTransaction.id)
-
         // Obtener customer
         const customer = await this.customerRepo.findById(transaction.customerId);
 
         // Definir estado y tiempo de estimación del delivery
-        const transactionStatus = updateTransaction.status
+        const transactionStatus = findStatusTransaction.status
         const isDeclined = transactionStatus === 'DECLINED';
 
         // **Solo actualiza el stock si la transacción fue aprobada**
@@ -63,7 +60,6 @@ export class UpdateStock {
         //crear delivery
         const newDelivery = new DeliveryEntity({
             id: generateShortUUID(),
-            transactionId: transaction.id,
             status: isDeclined ? 'REJECTED' : 'PENDING',
             address: customer.address,
             estimatedDelivery: isDeclined
@@ -74,6 +70,9 @@ export class UpdateStock {
         });
 
         const delivery = await this.deliveryRepo.save(newDelivery)
+
+        //Actualizar estado en DynamoDB
+        const updateTransaction = await this.transactionRepo.updateStatus(transaction.id, findStatusTransaction.status, findStatusTransaction.id, delivery.id)
 
         return { message: 'Estado actualizado', updateTransaction, delivery };
     }

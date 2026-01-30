@@ -8,6 +8,7 @@ export class TransactionEntity {
     id,
     productId,
     customerId,
+    deliveryId,
     amount,
     status,
     cardToken,
@@ -33,6 +34,7 @@ export class TransactionEntity {
     this.id = id;
     this.productId = productId;
     this.customerId = customerId;
+    this.deliveryId = deliveryId;
     this.amount = amount;
     this.status = status;
     this.cardToken = cardToken;
