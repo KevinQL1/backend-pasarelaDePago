@@ -4,6 +4,7 @@ import { ProductDynamoDB } from '#/infrastructure/dynamodb/ProductDynamoDB.js';
 import { PaymentService } from '#/application/services/PaymentService.js';
 import { CustomerDynamoDB } from '#/infrastructure/dynamodb/CustomerDynamoDB.js';
 import { payProcessSchema } from '#/infrastructure/Schemas/PayTransactionSchema.js'
+import { ok, badRequest, serverError } from '#/config/utils/httpResponse.js';
 
 const transactionRepo = new TransactionDynamoDB(process.env.TRANSACTION_TABLE);
 const productRepo = new ProductDynamoDB(process.env.PRODUCT_TABLE);
@@ -17,25 +18,14 @@ export const handler = async (event) => {
   // Validar body con Joi
   const { error } = payProcessSchema.validate(body, { abortEarly: false });
   if (error) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({
-        errors: error.details.map(e => e.message)
-      }),
-    };
-  }
+    return badRequest(event, error);
+  };
 
   try {
     const result = await processPayment.execute(body.paymentInfo);
-    return {
-      statusCode: 200,
-      body: JSON.stringify(result),
-    };
+    return ok(event, result);
   } catch (err) {
     console.error('Error processing transaction: ', err)
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: err.message }),
-    };
+    return serverError(event, err);
   }
 };

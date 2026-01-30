@@ -4,6 +4,7 @@ import { ProductDynamoDB } from '#/infrastructure/dynamodb/ProductDynamoDB.js';
 import { PaymentService } from '#/application/services/PaymentService.js';
 import { CustomerDynamoDB } from '#/infrastructure/dynamodb/CustomerDynamoDB.js';
 import { transactionSchema } from '#/infrastructure/Schemas/CreateTransactionSchema.js'
+import { ok, badRequest, serverError } from '#/config/utils/httpResponse.js';
 
 /*
  * Crea una transacción en estado PENDING.
@@ -23,28 +24,14 @@ export const handler = async (event) => {
         // Validar pathParameters con Joi
         const { error } = transactionSchema.validate(event.pathParameters, { abortEarly: false });
         if (error) {
-            return {
-                statusCode: 400,
-                body: JSON.stringify({
-                    errors: error.details.map(e => e.message)
-                }),
-            };
+            return badRequest(event, error);
         }
 
         const transaction = await createTransaction.execute(idTransaction);
 
-        return {
-            statusCode: 201,
-            body: JSON.stringify(transaction),
-        };
+        return ok(event, transaction);
     } catch (err) {
         console.error('Error creating transaction: ', err);
-
-        return {
-            statusCode: 500,
-            body: JSON.stringify({
-                message: error.message,
-            }),
-        };
+        return serverError(event, err);
     }
 };

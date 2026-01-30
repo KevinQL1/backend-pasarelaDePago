@@ -37,7 +37,7 @@ describe('webhookWompi.handler (current behavior)', () => {
 
     expect(executeMock).toHaveBeenCalledWith('00000000000000000');
     expect(res.statusCode).toBe(200);
-    expect(JSON.parse(res.body)).toEqual({ result: { message: 'Estado actualizado' } });
+    expect(JSON.parse(res.body)).toEqual({ message: 'Estado actualizado' });
   });
 
   it('should return 500 when UpdateStock throws', async () => {
@@ -47,6 +47,6 @@ describe('webhookWompi.handler (current behavior)', () => {
     const res = await handler(event);
 
     expect(res.statusCode).toBe(500);
-    expect(res.body).toBe('failure');
+    expect(JSON.parse(res.body).detail).toBe('An unexpected error has occurred, contact the administrator.');
   });
 });

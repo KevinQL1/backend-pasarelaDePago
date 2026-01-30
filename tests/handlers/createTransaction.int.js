@@ -38,7 +38,7 @@ describe('CreateTransaction.handler', () => {
 
     const response = await handler(event);
 
-    expect(response.statusCode).toBe(201);
+    expect(response.statusCode).toBe(200);
     expect(JSON.parse(response.body)).toEqual({ id: 'tx-1', status: 'PENDING' });
   });
 
@@ -50,12 +50,14 @@ describe('CreateTransaction.handler', () => {
     expect(response.statusCode).toBe(400);
   });
 
-  test('should throw when CreateTransaction.execute throws (current handler implementation has a catch bug)', async () => {
+  test('should return 500 when CreateTransaction.execute throws', async () => {
     // For this test, make the execute throw
     createTxExecuteMock.mockRejectedValueOnce(new Error('boom'));
 
     const event = { pathParameters: { idTransaction: '00000000000000000' } };
 
-    await expect(handler(event)).rejects.toThrow();
+    const response = await handler(event);
+    expect(response.statusCode).toBe(500);
+    expect(JSON.parse(response.body).detail).toBe('An unexpected error has occurred, contact the administrator.');
   });
 });
