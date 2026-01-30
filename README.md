@@ -253,4 +253,4 @@ Se utilizó IA como asistente para:
 ## 👨‍💻 Autor
 
 **Kevin Quintero**
-Prueba técnica – Wompi
+Ingeniero Informatico, Desarrollador Full Stack y Técnico en Sistemas
