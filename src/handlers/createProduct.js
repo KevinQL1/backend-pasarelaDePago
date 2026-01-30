@@ -1,5 +1,6 @@
 import { ProductDynamoDB } from '#/infrastructure/dynamodb/ProductDynamoDB.js';
 import { CreateProduct } from '#/application/useCases/CreateProduct.js';
+import { ok, badRequest, serverError } from '#/config/utils/httpResponse.js';
 
 const productRepo = new ProductDynamoDB(process.env.PRODUCT_TABLE);
 const createProduct = new CreateProduct(productRepo);
@@ -10,12 +11,7 @@ export const handler = async (event) => {
         const { name, description, price, stock } = data;
 
         if (!name || !description || !price || !stock) {
-            return {
-                statusCode: 400,
-                body: JSON.stringify({
-                    message: 'Missing required fields',
-                }),
-            };
+            return badRequest(event, new Error('Missing required fields'));
         }
 
         const product = await createProduct.execute({
@@ -25,17 +21,10 @@ export const handler = async (event) => {
             stock
         });
 
-        return {
-            statusCode: 201,
-            body: JSON.stringify({ message: 'Product created', product }),
-        };
+        return ok(event, { message: 'Product created', product });
     } catch (err) {
         console.error('Error creating product: ', err);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({
-                message: 'Internal server error',
-            }),
-        };
-    }
+
+        return serverError(event);
+    };
 };

@@ -28,9 +28,7 @@ describe('GetProducts Handler', () => {
     const response = await handler({})
 
     expect(response.statusCode).toBe(200)
-    expect(JSON.parse(response.body)).toEqual({
-      products: mockProducts,
-    })
+    expect(JSON.parse(response.body)).toEqual(mockProducts)
   })
 
   it('should return 500 when use case throws error', async () => {
@@ -39,8 +37,6 @@ describe('GetProducts Handler', () => {
     const response = await handler({})
 
     expect(response.statusCode).toBe(500)
-    expect(JSON.parse(response.body)).toEqual({
-      error: 'Database error',
-    })
+    expect(JSON.parse(response.body).detail).toBe('An unexpected error has occurred, contact the administrator.')
   })
 })

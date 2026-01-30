@@ -74,6 +74,6 @@ describe('payTransaction.handler', () => {
     const body = JSON.parse(response.body);
 
     expect(response.statusCode).toBe(500);
-    expect(body.error).toBe('Payment failed');
+    expect(body.detail).toBe('An unexpected error has occurred, contact the administrator.');
   });
 });

@@ -43,9 +43,7 @@ describe('createProduct.handler', () => {
     const response = await handler(event);
 
     expect(response.statusCode).toBe(400);
-    expect(JSON.parse(response.body)).toEqual({
-      message: 'Missing required fields',
-    });
+    expect(JSON.parse(response.body).detail).toBe('Missing required fields');
 
     expect(mockExecute).not.toHaveBeenCalled();
   });
@@ -75,7 +73,7 @@ describe('createProduct.handler', () => {
 
     const response = await handler(event);
 
-    expect(response.statusCode).toBe(201);
+    expect(response.statusCode).toBe(200);
 
     const body = JSON.parse(response.body);
 
@@ -109,9 +107,7 @@ describe('createProduct.handler', () => {
     const response = await handler(event);
 
     expect(response.statusCode).toBe(500);
-    expect(JSON.parse(response.body)).toEqual({
-      message: 'Internal server error',
-    });
+    expect(JSON.parse(response.body).detail).toBe('An unexpected error has occurred, contact the administrator.');
 
     expect(mockExecute).toHaveBeenCalledTimes(1);
   });
@@ -125,8 +121,6 @@ describe('createProduct.handler', () => {
     const response = await handler(event);
 
     expect(response.statusCode).toBe(400);
-    expect(JSON.parse(response.body)).toEqual({
-      message: 'Missing required fields',
-    });
+    expect(JSON.parse(response.body).detail).toBe('Missing required fields');
   });
 });

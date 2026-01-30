@@ -5,6 +5,7 @@ import { DeliveryDynamoDB } from '#/infrastructure/dynamodb/DeliveryDynamoDB.js'
 import { CustomerDynamoDB } from '#/infrastructure/dynamodb/CustomerDynamoDB.js';
 import { UpdateStock } from '#/application/useCases/UpdateStock.js';
 import { PaymentService } from '#/application/services/PaymentService.js';
+import { ok, badRequest, serverError } from '#/config/utils/httpResponse.js';
 
 const transactionDynamoDB = new TransactionDynamoDB(process.env.TRANSACTION_TABLE);
 const productDynamoDB = new ProductDynamoDB(process.env.PRODUCT_TABLE);
@@ -20,22 +21,14 @@ export const handler = async (event) => {
     // Validar pathParameters con Joi
     const { error } = webhookSchema.validate(event.pathParameters, { abortEarly: false });
     if (error) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          errors: error.details.map(e => e.message)
-        }),
-      };
+      return badRequest(event, error);
     }
 
     const result = await updateStock.execute(idTransaction);
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ result }),
-    };
+    return ok(event, result);
   } catch (err) {
     console.error('Error updating webhook: ', err)
-    return { statusCode: 500, body: err.message };
+    return serverError(event, err);
   }
 };
