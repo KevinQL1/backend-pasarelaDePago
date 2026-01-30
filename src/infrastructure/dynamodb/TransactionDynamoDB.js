@@ -59,11 +59,12 @@ export class TransactionDynamoDB {
           PK: `TRANSACTION#${transaction.id}`,
           SK: `TRANSACTION#${transaction.id}`,
           entity: 'TransactionEntity',
-
           ...transaction,
         },
       })
     );
+
+    return transaction;
   }
 
   async update(transaction) {
@@ -89,6 +90,8 @@ export class TransactionDynamoDB {
         },
       })
     );
+
+    return this.findById(id);
   }
 
   async updateStatus(id, status, wompiTransactionId = null) {
@@ -116,6 +119,8 @@ export class TransactionDynamoDB {
         },
       })
     );
+
+    return this.findById(id);
   }
 
   async findByWompiTransactionId(wompiTransactionId) {

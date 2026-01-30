@@ -36,22 +36,28 @@ backend-wompi/
 ├── docker-compose.yml      # Docker para las tablas de dynamoDB(local)
 │
 ├── src/
+│   ├── application/        # Casos de uso
+│   │   ├── useCases/       # Orquestación de la lógica del negocio
+│   │   └── services/       # Servicios de apoyo (pagos)
+│   │
+│   │
+│   ├── config/             # Configuración y constantes del sistema
+│   │   ├── utils/          # Codigo reutilizable
+│   │   └── index.js        # Configuración variables de entorno
+│   │ 
+│   │ 
 │   ├── domain/             # Núcleo del negocio
 │   │   ├── entities/       # Entidades del dominio y reglas de negocio
 │   │   └── repositories/   # Contratos (interfaces) para persistencia
 │   │
-│   ├── application/        # Casos de uso
-│   │   ├── useCases/       # Orquestación de la lógica del negocio
-│   │   └── services/       # Servicios de apoyo (pagos, cifrado, etc.)
 │   │
 │   ├── infrastructure/     # Implementaciones técnicas
 │   │   ├── dynamodb/       # Repositorios DynamoDB
 │   │   ├── wompi/          # Cliente de la pasarela de pagos
-│   │   │── crypto/         # Cifrado de información sensible
+│   │   │── crypto/         # Cifrado de información sensible (hash firma)
 │   │
-│   ├── handlers/           # Handlers HTTP (API Gateway → Lambda)
-│   │
-│   └── config/             # Configuración y constantes del sistema
+│   └── handlers/           # Handlers HTTP (API Gateway → Lambda) 
+
 │
 └── tests/                  # Pruebas automatizadas
     ├── domain/             # Tests de entidades del dominio
@@ -95,21 +101,19 @@ npm test
 Crea un archivo `.env` basado en `.env.example` con las siguientes variables mínimas:
 
 - WOMPI_PUBLIC_KEY
-- WOMPI_PRIVATE_KEY (opcional, para verificar webhooks)
-- WOMPI_BASE_URL (opcional, ej. https://api-sandbox.co.uat.wompi.dev/v1)
+- WOMPI_INTEGRITY_KEY
+- WOMPI_BASE_URL
 - PRODUCT_TABLE
 - CUSTOMER_TABLE
 - TRANSACTION_TABLE
 - DELIVERY_TABLE
-- ENCRYPTION_KEY
-- ENCRYPTION_IV
 
 ---
 
 ## 💳 Tarjetas de prueba (sandbox)
 
-- VISA: `4111111111111111`
-- MASTERCARD: `5555555555554444`
+- VISA: `4111111111111111` (DECLINE)
+- VISA: `4242424242424242` (APPROVED)
 
 Usa expiraciones futuras (ej. `12/50`) y CVC `123`.
 
@@ -117,8 +121,8 @@ Usa expiraciones futuras (ej. `12/50`) y CVC `123`.
 
 ## 🔧 Endpoints principales
 
-- POST `/products` → Crear producto
-- GET `/products` → Listar productos
-- POST `/transaction` → Crear transacción (PENDING)
-- POST `/transaction/pay` → Iniciar pago (usando Wompi)
-- POST `/webhook/wompi` → Webhook para recibir estados de pago
+- POST `/products` → Crear un producto
+- GET `/products` → Listar todos los productos
+- POST `/transaction/pay` → Crear transacción (CREATE)
+- POST `/transaction/{IdTransaction}` → Iniciar pago (PENDING)
+- POST `/webhook/{IdTransaction}` → Webhook para recibir estados de pago (DECLINE OR APPROVED)

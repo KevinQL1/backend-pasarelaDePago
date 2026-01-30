@@ -13,7 +13,8 @@ process.on('message', async ({ entryPoints, mode }) => {
     external: [
     '@aws-sdk/client-dynamodb',
     '@aws-sdk/lib-dynamodb',
-    'buffer'
+    'buffer',
+    'joi'
   ]
   }
 

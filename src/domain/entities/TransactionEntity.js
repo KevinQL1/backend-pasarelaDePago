@@ -3,19 +3,17 @@
  * Contiene reglas de negocio y control de estados.
  */
 
-export const TransactionStatus = {
-  PENDING: 'PENDING',
-  APPROVED: 'APPROVED',
-  DECLINED: 'DECLINED',
-};
-
 export class TransactionEntity {
   constructor({
     id,
     productId,
     customerId,
     amount,
-    status = TransactionStatus.PENDING,
+    status,
+    cardToken,
+    quantity,
+    acceptanceToken,
+    personalToken,
     wompiTransactionId = null,
     createdAt,
     updatedAt,
@@ -23,7 +21,11 @@ export class TransactionEntity {
     if (!id) throw new Error('Transaction must have an id');
     if (!productId) throw new Error('Transaction must have a productId');
     if (!customerId) throw new Error('Transaction must have a customerId');
+    if (!cardToken) throw new Error('Transaction must have a cardToken');
+    if (!acceptanceToken) throw new Error('Transaction must have a acceptanceToken');
+    if (!personalToken) throw new Error('Transaction must have a personalToken');
     if (amount <= 0) throw new Error('Transaction amount must be greater than 0');
+    if (quantity <= 0) throw new Error('Transaction quantity must be greater than 0');
     if (!createdAt || !updatedAt) {
       throw new Error('Transaction must have timestamps');
     }
@@ -33,27 +35,12 @@ export class TransactionEntity {
     this.customerId = customerId;
     this.amount = amount;
     this.status = status;
+    this.cardToken = cardToken;
+    this.quantity = quantity;
+    this.acceptanceToken = acceptanceToken;
+    this.personalToken = personalToken;
     this.wompiTransactionId = wompiTransactionId;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-  }
-
-  approve(wompiTransactionId) {
-    if (this.status !== TransactionStatus.PENDING) {
-      throw new Error('Only pending transactions can be approved');
-    }
-
-    this.status = TransactionStatus.APPROVED;
-    this.wompiTransactionId = wompiTransactionId;
-    this.updatedAt = new Date().toISOString();
-  }
-
-  decline() {
-    if (this.status !== TransactionStatus.PENDING) {
-      throw new Error('Only pending transactions can be declined');
-    }
-
-    this.status = TransactionStatus.DECLINED;
-    this.updatedAt = new Date().toISOString();
+    this.createdAt = createdAt
+    this.updatedAt = updatedAt
   }
 }

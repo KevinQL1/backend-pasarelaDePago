@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { generateShortUUID } from '#/config/utils/uuidv4.js';
 import { ProductEntity } from '#/domain/entities/ProductEntity.js';
 
 /**
@@ -6,11 +6,11 @@ import { ProductEntity } from '#/domain/entities/ProductEntity.js';
  */
 
 export class CreateProduct {
-    constructor(productRepository) {
-        if (!productRepository) {
+    constructor(productRepo) {
+        if (!productRepo) {
             throw new Error('ProductRepository is required');
         }
-        this.productRepository = productRepository;
+        this.productRepo = productRepo;
     }
 
     async execute({ name, description, price, stock }) {
@@ -21,7 +21,7 @@ export class CreateProduct {
         const now = new Date().toISOString();
 
         const product = new ProductEntity({
-            id: uuidv4(),
+            id: generateShortUUID(),
             name,
             description,
             price,
@@ -30,7 +30,7 @@ export class CreateProduct {
             updatedAt: now,
         });
 
-        await this.productRepository.save(product);
+        await this.productRepo.save(product);
 
         return product;
     }

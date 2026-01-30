@@ -1,8 +1,13 @@
-import { isValidLuhn, isExpiryValid, isCvcValid } from '#/infrastructure/crypto/cardUtils.js';
+import { generateShortUUID } from '#/config/utils/uuidv4.js';
+import { TransactionEntity } from '#/domain/entities/TransactionEntity.js';
+import { CustomerEntity } from '#/domain/entities/CustomerEntity.js';
+
+
 export class ProcessPayment {
-  constructor(transactionRepo, productRepo, paymentService) {
+  constructor(transactionRepo, productRepo, customerRepo, paymentService) {
     this.transactionRepo = transactionRepo;
     this.productRepo = productRepo;
+    this.customerRepo = customerRepo;
     this.paymentService = paymentService;
   }
 
@@ -11,54 +16,51 @@ export class ProcessPayment {
    */
 
   async execute(paymentInfo) {
-    const { cardNumber, cardType, customerAddress, expiry, cvc, cardHolder, transactionId } = paymentInfo;
+    const { productId, quantity } = paymentInfo
 
-    if (!cardNumber || !cardType) throw new Error('Card number and type are required');
-    if (!customerAddress || customerAddress.trim() === '') throw new Error('Delivery address is required');
-    if (!/^\d{16}$/.test(cardNumber)) throw new Error('Card number must be 16 digits');
-    if (!['VISA', 'MASTERCARD'].includes(cardType.toUpperCase())) throw new Error('Only VISA and MASTERCARD allowed');
-
-    if (!isValidLuhn(cardNumber)) throw new Error('Card failed Luhn check');
-    if (!expiry || !isExpiryValid(expiry)) throw new Error('Card expiration invalid or expired');
-    if (!cvc || !isCvcValid(cvc)) throw new Error('CVC must be 3 digits');
-
-    // Obtener transacción
-    const transaction = await this.transactionRepo.findById(transactionId);
-    if (!transaction) throw new Error('Transaction not found');
-
-    // Validar stock nuevamente antes de pagar
-    const product = await this.productRepo.findById(transaction.productId);
-    if (!product) throw new Error(`Product with ID ${transaction.productId} not found`);
-    if (product.stock < 1 || product.stock < transaction.amount) {
-      throw new Error(`Product ${product.name} is out of stock or insufficient stock: ${product.stock} for the requested amount ${transaction.amount}`);
+    // Validar stock antes de pagar
+    const product = await this.productRepo.findById(productId);
+    if (!product) throw new Error(`Product with ID ${productId} not found`);
+    if (product.stock < 1 || product.stock < quantity) {
+      throw new Error(`Product ${product.name} is out of stock or insufficient stock: ${product.stock} for the requested quantity ${quantity}`);
     }
-
-    const paymentPayload = {
-      card_number: cardNumber,
-      cvc,
-      card_expiration: expiry, // MM/YY
-      card_holder: cardHolder || 'N/A',
-      amount_in_cents: Math.round((transaction.amount || 0) * 100) || 1000,
-      currency: 'COP',
-      card_type: cardType.toUpperCase(),
-    };
 
     // Procesar pago con Wompi
-    const paymentResult = await this.paymentService.processPayment(transactionId, paymentPayload);
-    const status = paymentResult.status;
+    const paymentResult = await this.paymentService.processPayment(paymentInfo);
 
-    // Actualizar transacción
-    await this.transactionRepo.updateStatus(transactionId, status, paymentResult.wompiTransactionId);
+    const now = new Date().toISOString();
 
-    // Si es aprobado, disminuir stock
-    if (status === 'APPROVED') {
-      await this.productRepo.decreaseStock(transaction.productId, 1);
-    }
+    // Creando usuario
+    const newCustomer = new CustomerEntity({
+      id: paymentInfo.customer.cedula,
+      name: paymentInfo.customer.name,
+      address: paymentInfo.customer.address,
+      city: paymentInfo.customer.city,
+      phone: paymentInfo.customer.phone,
+      email: paymentInfo.customer.email,
+      createdAt: now,
+      updatedAt: now,
+    });
 
-    return {
-      transactionId,
-      status,
-      wompiTransactionId: paymentResult.wompiTransactionId,
-    };
+    await this.customerRepo.save(newCustomer)
+
+    // Creando transaccion
+    const newTransaction = new TransactionEntity({
+      id: generateShortUUID(),
+      productId,
+      quantity,
+      customerId: paymentInfo.customer.cedula,
+      amount: (product.price * quantity) * 100,
+      status: paymentResult.status,
+      cardToken: paymentResult.tokenCard.id,
+      acceptanceToken: paymentResult.tokenMerchants.presigned_acceptance.acceptance_token,
+      personalToken: paymentResult.tokenMerchants.presigned_personal_data_auth.acceptance_token,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    const transaction = await this.transactionRepo.save(newTransaction)
+
+    return transaction
   }
 }

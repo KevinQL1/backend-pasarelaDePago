@@ -1,67 +1,41 @@
-import { v4 as uuidv4 } from 'uuid';
-import {
-  TransactionEntity,
-  TransactionStatus
-} from '#/domain/entities/TransactionEntity.js';
-
 /**
  * Caso de uso encargado de crear una transacción de pago
- * en estado PENDING antes de llamar a la pasarela (Wompi).
+ * en estado PENDING antes de llamando a la pasarela (Wompi).
  */
 export class CreateTransaction {
-  constructor(transactionRepositoryOrOptions = {}, maybeProductRepository) {
-    let transactionRepository;
-    let productRepository;
-
-    if (transactionRepositoryOrOptions && typeof transactionRepositoryOrOptions === 'object' && (transactionRepositoryOrOptions.transactionRepository || transactionRepositoryOrOptions.productRepository)) {
-      ({ transactionRepository, productRepository } = transactionRepositoryOrOptions);
-    } else {
-      transactionRepository = transactionRepositoryOrOptions;
-      productRepository = maybeProductRepository;
-    }
-
-    if (!transactionRepository) {
-      throw new Error('TransactionRepository is required');
-    }
-
-    if (!productRepository) {
-      throw new Error('ProductRepository is required');
-    }
-
-    this.transactionRepository = transactionRepository;
-    this.productRepository = productRepository;
+  constructor(transactionRepo, productRepo, customerRepo, paymentService) {
+    this.transactionRepo = transactionRepo;
+    this.productRepo = productRepo;
+    this.customerRepo = customerRepo
+    this.paymentService = paymentService;
   }
 
-  async execute({ customerId, productId, amount }) {
-    if (!customerId || !productId || amount <= 0) {
-      throw new Error('Invalid transaction data');
+  async execute(idTransaction) {
+    // Obtener la transacción
+    const transaction = await this.transactionRepo.findById(idTransaction)
+    if (!transaction) {
+      throw new Error(`Transaction with ID ${idTransaction} not found`);
     }
 
     // Validar stock del producto
-    const product = await this.productRepository.findById(productId);
-
+    const product = await this.productRepo.findById(transaction.productId);
     if (!product) {
-      throw new Error(`Product with ID ${productId} not found`);
+      throw new Error(`Product with ID ${transaction.productId} not found`);
+    }
+    if (product.stock < 1 || product.stock < transaction.quantity) {
+      throw new Error(`Product ${product.name} is out of stock or insufficient stock: ${product.stock} for the requested quantity ${transaction.quantity}`);
     }
 
-    if (product.stock < 1 || product.stock < amount) {
-      throw new Error(`Product ${product.name} is out of stock or insufficient stock: ${product.stock} for the requested amount ${amount}`);
+    //Obtener el Customer
+    const customer = await this.customerRepo.findById(transaction.customerId)
+    if (!customer) {
+      throw new Error(`Customer with ID ${transaction.customerId} not found`);
     }
 
-    const now = new Date().toISOString();
+    const createTransaction = await this.paymentService.createPayment(transaction, customer)
 
-    const transaction = new TransactionEntity({
-      id: uuidv4(),
-      customerId,
-      productId,
-      amount,
-      status: TransactionStatus.PENDING,
-      createdAt: now,
-      updatedAt: now,
-    });
+    const updateTransaction = await this.transactionRepo.updateStatus(transaction.id, createTransaction.status, createTransaction.id)
 
-    await this.transactionRepository.save(transaction);
-
-    return transaction;
+    return { message: 'Estado actualizado', updateTransaction };
   }
 }

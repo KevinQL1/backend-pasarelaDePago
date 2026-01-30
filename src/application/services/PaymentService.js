@@ -8,9 +8,20 @@ export class PaymentService {
   }
 
   // Procesa un pago enviando la información a Wompi
-  async processPayment(transactionId, paymentInfo) {
-    // paymentInfo puede incluir: card_number, cvv, expiration_date, card_holder
-    const result = await this.wompiClient.createTransaction(transactionId, paymentInfo);
-    return result; // Devuelve objeto con estado: APPROVED | DECLINED | PENDING
+  async processPayment(paymentInfo) {
+    const result = await this.wompiClient.tokenCard(paymentInfo);
+    return result;
+  }
+
+// Realiza el pago enviando los tokens necesarios a wompi
+  async createPayment(transaction, customer){
+    const result = await this.wompiClient.createTransaction(transaction, customer);
+    return result;
+  }
+
+// Buscar y actualizar el estado de la transaccion
+  async findAndUpdateTransactionById(wompiTransactionId){
+    const result = await this.wompiClient.findAndUpdateTransactionById(wompiTransactionId);
+    return result;
   }
 }

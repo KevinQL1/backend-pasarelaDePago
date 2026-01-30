@@ -1,15 +1,10 @@
-export const DeliveryStatus = {
-  PENDING: 'PENDING',
-  SENT: 'SENT',
-  DELIVERED: 'DELIVERED',
-}
-
 export class DeliveryEntity {
   constructor({
     id,
     transactionId,
     address,
-    status = DeliveryStatus.PENDING,
+    status,
+    estimatedDelivery,
     createdAt,
     updatedAt,
   }) {
@@ -19,8 +14,9 @@ export class DeliveryEntity {
     this.transactionId = transactionId
     this.address = address
     this.status = status
-    this.createdAt = createdAt || new Date().toISOString()
-    this.updatedAt = updatedAt || new Date().toISOString()
+    this.estimatedDelivery = estimatedDelivery
+    this.createdAt = createdAt
+    this.updatedAt = updatedAt
   }
 
   validate({ id, transactionId, address }) {
@@ -35,23 +31,5 @@ export class DeliveryEntity {
     if (!address || typeof address !== 'string') {
       throw new Error('Delivery address is required')
     }
-  }
-
-  markAsSent() {
-    if (this.status !== DeliveryStatus.PENDING) {
-      throw new Error('Only pending deliveries can be sent')
-    }
-
-    this.status = DeliveryStatus.SENT
-    this.updatedAt = new Date().toISOString()
-  }
-
-  markAsDelivered() {
-    if (this.status !== DeliveryStatus.SENT) {
-      throw new Error('Only sent deliveries can be delivered')
-    }
-
-    this.status = DeliveryStatus.DELIVERED
-    this.updatedAt = new Date().toISOString()
   }
 }

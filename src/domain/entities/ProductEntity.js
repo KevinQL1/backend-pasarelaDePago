@@ -1,5 +1,13 @@
 export class ProductEntity {
-  constructor({ id, name, description, price, stock }) {
+  constructor({
+    id,
+    name,
+    description,
+    price,
+    stock,
+    createdAt,
+    updatedAt 
+  }) {
     this.validate({ id, name, price, stock })
 
     this.id = id
@@ -7,6 +15,8 @@ export class ProductEntity {
     this.description = description || ''
     this.price = price
     this.stock = stock
+    this.createdAt = createdAt
+    this.updatedAt = updatedAt
   }
 
   validate({ id, name, price, stock }) {

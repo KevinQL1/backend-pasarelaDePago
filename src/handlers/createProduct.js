@@ -30,7 +30,7 @@ export const handler = async (event) => {
             body: JSON.stringify({ message: 'Product created', product }),
         };
     } catch (err) {
-        console.error('Error creating product:', err);
+        console.error('Error creating product: ', err);
         return {
             statusCode: 500,
             body: JSON.stringify({

@@ -62,6 +62,8 @@ export class DeliveryDynamoDB {
         },
       })
     );
+
+    return delivery
   }
 
   async update(delivery) {

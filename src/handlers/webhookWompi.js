@@ -1,72 +1,41 @@
+import { webhookSchema } from '#/infrastructure/Schemas/WebhookWompiSchema.js'
 import { TransactionDynamoDB } from '#/infrastructure/dynamodb/TransactionDynamoDB.js';
 import { ProductDynamoDB } from '#/infrastructure/dynamodb/ProductDynamoDB.js';
 import { DeliveryDynamoDB } from '#/infrastructure/dynamodb/DeliveryDynamoDB.js';
+import { CustomerDynamoDB } from '#/infrastructure/dynamodb/CustomerDynamoDB.js';
 import { UpdateStock } from '#/application/useCases/UpdateStock.js';
-import { v4 as uuidv4 } from 'uuid';
+import { PaymentService } from '#/application/services/PaymentService.js';
 
+const transactionDynamoDB = new TransactionDynamoDB(process.env.TRANSACTION_TABLE);
+const productDynamoDB = new ProductDynamoDB(process.env.PRODUCT_TABLE);
+const deliveryDynamoDB = new DeliveryDynamoDB(process.env.DELIVERY_TABLE);
+const customerDynamoDB = new CustomerDynamoDB(process.env.CUSTOMER_TABLE)
+const paymentService = new PaymentService();
+const updateStock = new UpdateStock(transactionDynamoDB, productDynamoDB, deliveryDynamoDB, customerDynamoDB, paymentService);
 
 export const handler = async (event) => {
-  const transactionDynamoDB = new TransactionDynamoDB(process.env.TRANSACTION_TABLE);
-  const productDynamoDB = new ProductDynamoDB(process.env.PRODUCT_TABLE);
-  const deliveryDynamoDB = new DeliveryDynamoDB(process.env.DELIVERY_TABLE);
-  const updateStockUseCase = new UpdateStock({ productRepository: productDynamoDB });
-
   try {
-    const body = JSON.parse(event.body);
+    const { idTransaction } = event.pathParameters;
 
-    // Optional: verify webhook signature if private key and signature header are provided
-    const signatureHeader = event.headers?.['x-wompi-signature'] || event.headers?.['Wompi-Signature'] || event.headers?.['signature'];
-    const privateKey = process.env.WOMPI_PRIVATE_KEY;
-    if (privateKey && signatureHeader) {
-      const { createHmac } = await import('crypto');
-      const expected = createHmac('sha256', privateKey).update(event.body).digest('hex');
-      if (expected !== signatureHeader) {
-        return { statusCode: 401, body: 'Invalid signature' };
-      }
-    }
-
-    const wompiTransactionId = body.data?.id;
-    const status = body.data?.status;
-
-    if (!wompiTransactionId || !status) {
-      return { statusCode: 400, body: 'Invalid payload' };
-    }
-
-    // Buscar la transacción por wompiTransactionId
-    const transaction = await transactionDynamoDB.findByWompiTransactionId(wompiTransactionId);
-    if (!transaction) {
-      return { statusCode: 404, body: 'Transaction not found' };
-    }
-
-    // Actualizar estado de la transacción
-    transaction.status = status;
-    transaction.updatedAt = new Date().toISOString();
-    transaction.wompiTransactionId = wompiTransactionId;
-    await transactionDynamoDB.update(transaction);
-
-    // Si es aprobado, actualizar stock y crear delivery
-    if (status === 'APPROVED') {
-      // Actualizar stock
-      await updateStockUseCase.execute({
-        productId: transaction.productId,
-        quantity: 1,
-      });
-
-      // Crear delivery
-      const delivery = {
-        id: uuidv4(),
-        transactionId: transaction.id,
-        address: transaction.deliveryAddress || 'Address not provided',
-        status: 'PENDING',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+    // Validar pathParameters con Joi
+    const { error } = webhookSchema.validate(event.pathParameters, { abortEarly: false });
+    if (error) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          errors: error.details.map(e => e.message)
+        }),
       };
-
-      await deliveryDynamoDB.save(delivery);
     }
 
-    return { statusCode: 200, body: 'OK' };
+    const result = await updateStock.execute(idTransaction);
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ result }),
+    };
   } catch (err) {
+    console.error('Error updating webhook: ', err)
     return { statusCode: 500, body: err.message };
   }
 };

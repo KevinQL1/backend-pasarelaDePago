@@ -12,6 +12,7 @@ export const handler = async (event) => {
       body: JSON.stringify({ products }),
     };
   } catch (err) {
+    console.error('Error obtaing products: ', err)
     return {
       statusCode: 500,
       body: JSON.stringify({ error: err.message }),

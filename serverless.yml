@@ -28,10 +28,8 @@ provider:
     CUSTOMER_TABLE: ${env:CUSTOMER_TABLE}
     TRANSACTION_TABLE: ${env:TRANSACTION_TABLE}
     DELIVERY_TABLE: ${env:DELIVERY_TABLE}
-    ENCRYPTION_KEY: ${env:ENCRYPTION_KEY}
-    ENCRYPTION_IV: ${env:ENCRYPTION_IV}
     WOMPI_PUBLIC_KEY: ${env:WOMPI_PUBLIC_KEY}
-    WOMPI_PRIVATE_KEY: ${env:WOMPI_PRIVATE_KEY}
+    WOMPI_INTEGRITY_KEY: ${env:WOMPI_INTEGRITY_KEY}
 
   iamRoleStatements:
     - Effect: Allow
@@ -137,15 +135,17 @@ functions:
 
   # Crear una transacción
   createTransaction:
+    timeout: 30
     handler: ${self:custom.pathRoot}/handlers/createTransaction.handler
     events:
       - http:
-          path: transaction
+          path: transaction/{idTransaction}
           method: post
           cors: true
 
   # Pagar una transacción
   payTransaction:
+    timeout: 30
     handler: ${self:custom.pathRoot}/handlers/payTransaction.handler
     events:
       - http:
@@ -155,10 +155,11 @@ functions:
 
   # Webhook Wompi
   webhookWompi:
+    timeout: 30
     handler: ${self:custom.pathRoot}/handlers/webhookWompi.handler
     events:
       - http:
-          path: webhook/wompi
+          path: webhook/{idTransaction}
           method: post
           cors: true
 
