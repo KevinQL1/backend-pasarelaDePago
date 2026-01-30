@@ -10,7 +10,7 @@
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules IS_TEST=true stage=local region=local jest --passWithNoTests --runInBand --no-cache",
     "test:ci": "npm test -- --coverage",
     "build": "rimraf dist && node esbuild/mainBuild.js",
-    "deploy": "npm run build && serverless deploy",
+    "deploy": "npm run build && serverless deploy --verbose",
     "local": "npm run build && serverless offline",
     "dynamodb:start": "docker compose up -d",
     "dynamodb:stop": "docker compose down",

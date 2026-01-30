@@ -1,0 +1,287 @@
+{
+  "info": {
+    "_postman_id": "b083b63a-13f1-4b97-ad8f-27dc4d596589",
+    "name": "Backend-wompi",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "26956043"
+  },
+  "item": [
+    {
+      "name": "Local",
+      "item": [
+        {
+          "name": "Products",
+          "item": [
+            {
+              "name": "GetProducts",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:4001/local/products",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "4001",
+                  "path": [
+                    "local",
+                    "products"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "CreateProduct",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"name\": \"TV\",\r\n    \"description\": \"Samsung 60 pulgadas\",\r\n    \"price\": 1500,\r\n    \"stock\": 2\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:4001/local/products",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "4001",
+                  "path": [
+                    "local",
+                    "products"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "1 - PayTransaction",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"paymentInfo\": {\r\n        \"cardNumber\": \"4242424242424242\", // 4242424242424242 aprobada ----- 4111111111111111 rechazada\r\n        \"cardType\": \"VISA\",\r\n        \"expiry\": \"01/50\",\r\n        \"cvc\": \"123\",\r\n        \"customer\": {\r\n            \"cedula\": \"1037650134\",\r\n            \"name\": \"Kevin Quintero\",\r\n            \"address\": \"carrera 40 # 40 B sur - 41\",\r\n            \"city\": \"Envigado\",\r\n            \"phone\": \"573042006112\",\r\n            \"email\": \"kevinquintero045@gmail.com\"\r\n        },\r\n        \"productId\": \"658db37f82d6456ea330\", // ID DE UN PRODUCTO\r\n        \"quantity\": 2\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:4001/local/transaction/pay",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "4001",
+              "path": [
+                "local",
+                "transaction",
+                "pay"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2 - CreateTransaction",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:4001/local/transaction/d9888d33d3684654a",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "4001",
+              "path": [
+                "local",
+                "transaction",
+                "d9888d33d3684654a"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "3 - webhook",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:4001/local/webhook/d9888d33d3684654a",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "4001",
+              "path": [
+                "local",
+                "webhook",
+                "d9888d33d3684654a"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "API",
+      "item": [
+        {
+          "name": "Products",
+          "item": [
+            {
+              "name": "GetProducts",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://nml394oswa.execute-api.us-east-1.amazonaws.com/local/products",
+                  "protocol": "https",
+                  "host": [
+                    "nml394oswa",
+                    "execute-api",
+                    "us-east-1",
+                    "amazonaws",
+                    "com"
+                  ],
+                  "path": [
+                    "local",
+                    "products"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "CreateProduct",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"name\": \"TV\",\r\n    \"description\": \"Samsung 60 pulgadas\",\r\n    \"price\": 1500,\r\n    \"stock\": 2\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://nml394oswa.execute-api.us-east-1.amazonaws.com/local/products",
+                  "protocol": "https",
+                  "host": [
+                    "nml394oswa",
+                    "execute-api",
+                    "us-east-1",
+                    "amazonaws",
+                    "com"
+                  ],
+                  "path": [
+                    "local",
+                    "products"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "1 - PayTransaction",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"paymentInfo\": {\r\n        \"cardNumber\": \"4242424242424242\", // 4242424242424242 aprobada ----- 4111111111111111 rechazada\r\n        \"cardType\": \"VISA\",\r\n        \"expiry\": \"01/50\",\r\n        \"cvc\": \"123\",\r\n        \"customer\": {\r\n            \"cedula\": \"1037650134\",\r\n            \"name\": \"Kevin Quintero\",\r\n            \"address\": \"carrera 40 # 40 B sur - 41\",\r\n            \"city\": \"Envigado\",\r\n            \"phone\": \"573042006112\",\r\n            \"email\": \"kevinquintero045@gmail.com\"\r\n        },\r\n        \"productId\": \"620023ecb0c64926a\", // ID DE UN PRODUCTO\r\n        \"quantity\": 2\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://nml394oswa.execute-api.us-east-1.amazonaws.com/local/transaction/pay",
+              "protocol": "https",
+              "host": [
+                "nml394oswa",
+                "execute-api",
+                "us-east-1",
+                "amazonaws",
+                "com"
+              ],
+              "path": [
+                "local",
+                "transaction",
+                "pay"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2 - CreateTransaction",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "https://nml394oswa.execute-api.us-east-1.amazonaws.com/local/transaction/9ceae881b65d4d809",
+              "protocol": "https",
+              "host": [
+                "nml394oswa",
+                "execute-api",
+                "us-east-1",
+                "amazonaws",
+                "com"
+              ],
+              "path": [
+                "local",
+                "transaction",
+                "9ceae881b65d4d809"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "3 - webhook",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "https://nml394oswa.execute-api.us-east-1.amazonaws.com/local/webhook/9ceae881b65d4d809",
+              "protocol": "https",
+              "host": [
+                "nml394oswa",
+                "execute-api",
+                "us-east-1",
+                "amazonaws",
+                "com"
+              ],
+              "path": [
+                "local",
+                "webhook",
+                "9ceae881b65d4d809"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
