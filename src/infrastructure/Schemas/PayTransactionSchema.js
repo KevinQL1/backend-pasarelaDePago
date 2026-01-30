@@ -10,24 +10,45 @@ export const payProcessSchema = Joi.object({
         "string.creditCard": "El número de tarjeta no es válido",
         "any.required": "El número de tarjeta es requerido"
       }),
-    cardType: Joi.string().valid("VISA", "MASTERCARD").required().messages({
-      "any.only": "Tipo de tarjeta no válido",
-      "any.required": "El tipo de tarjeta es requerido"
-    }),
+    cardType: Joi.string()
+      .valid("VISA", "MASTERCARD")
+      .required()
+      .messages({
+        "any.only": "Tipo de tarjeta no válido",
+        "any.required": "El tipo de tarjeta es requerido"
+      }),
     expiry: Joi.string()
       .pattern(/^(\d{2})\/(\d{2})$/)
       .required()
       .custom((value, helpers) => {
         const [month, year] = value.split('/').map(Number);
-        if (month < 1 || month > 12) return helpers.error("any.invalidMonth");
-        if (year < 26 || year > 50) return helpers.error("any.invalidYear");
+
+        // Validar mes
+        if (month < 1 || month > 12) {
+          return helpers.error("any.invalidMonth");
+        }
+
+        // Validar rango de año
+        if (year < 26 || year > 50) {
+          return helpers.error("any.invalidYear");
+        }
+
+        // Validar tarjeta vencida según fecha actual
+        const today = new Date();
+        const currentMonth = today.getMonth() + 1; // enero=0
+        const currentYear = today.getFullYear() % 100; // últimos 2 dígitos del año
+
+        if (year < currentYear) return helpers.error("any.cardExpired");
+        if (year === currentYear && month < currentMonth) return helpers.error("any.cardExpired");
+
         return value;
       })
       .messages({
         "string.pattern.base": "Expiry debe tener formato MM/YY",
         "any.required": "Expiry es requerido",
         "any.invalidMonth": "El mes de expiry debe estar entre 01 y 12",
-        "any.invalidYear": "El año de expiry debe estar entre 26 y 50"
+        "any.invalidYear": "El año de expiry debe estar entre 26 y 50",
+        "any.cardExpired": "La tarjeta está vencida"
       }),
     cvc: Joi.string()
       .pattern(/^\d{3}$/)
@@ -83,9 +104,9 @@ export const payProcessSchema = Joi.object({
     }),
     productId: Joi.string().min(17).max(20).required().messages({
       "string.base": "El productId debe ser un texto",
-      'string.empty': 'El productId no puede estar vacío',
-      'string.min': 'El productId debe tener al menos 17 caracteres',
-      'string.max': 'El productId debe tener como máximo 20 caracteres',
+      "string.empty": "El productId no puede estar vacío",
+      "string.min": "El productId debe tener al menos 17 caracteres",
+      "string.max": "El productId debe tener como máximo 20 caracteres",
       "any.required": "El productId del cliente es requerido"
     }),
     quantity: Joi.number()
